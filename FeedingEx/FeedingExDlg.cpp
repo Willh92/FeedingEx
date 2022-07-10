@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(CFeedingExDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_INIT_LEFT_99, &CFeedingExDlg::OnBnClickedInitLeft99)
 	ON_BN_CLICKED(IDC_LEFT_DECREASE, &CFeedingExDlg::OnBnClickedLeftDecrease)
 	ON_BN_CLICKED(IDC_LOCK_LEFT, &CFeedingExDlg::OnBnClickedLockLeft)
+	ON_BN_CLICKED(IDC_GOD, &CFeedingExDlg::OnBnClickedGod)
 END_MESSAGE_MAP()
 
 // CFeedingExDlg 消息处理程序
@@ -141,6 +142,45 @@ void CFeedingExDlg::OnPaint()
 HCURSOR CFeedingExDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+/*  无敌
+* [ENABLE]
+0040FABB:
+  db B0 00 C7 86 88 03 00 00 05 00 00 00
+0040C342:
+  db 05
+
+[DISABLE]
+0040FABB:
+  db B0 01 C7 86 88 03 00 00 00 00 00 00
+0040C342:
+  db 06
+*/
+void CFeedingExDlg::OnBnClickedGod()
+{
+	CButton* b = (CButton*)GetDlgItem(IDC_GOD);
+	DWORD nPid = GetProcessPid("feeding.exe");
+	if (nPid) {
+		HANDLE nHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, nPid);
+		if (nHandle) {
+			BYTE origin1[] = { 0xB0,0x01,0xC7,0x86,0x88,0x03,0x00,0x00,0x00 };
+			BYTE origin2[] = { 0x06 };
+			if (b->GetCheck()) {
+				origin1[1] = 0x00;
+				origin1[8] = origin2[0] = 0x05;
+			}
+			DWORD baseAddress1 = 0x0040FABB;
+			DWORD baseAddress2 = 0x0040C342;
+			if (WriteProcessMemory(nHandle, (LPVOID)baseAddress1, origin1, sizeof(origin1), 0)
+				&& WriteProcessMemory(nHandle, (LPVOID)baseAddress2, origin2, sizeof(origin2), 0)) {
+				CloseHandle(nHandle);
+				return;
+			}
+			CloseHandle(nHandle);
+		}
+	}
+	b->SetCheck(FALSE);
 }
 
 /*  无限吞噬

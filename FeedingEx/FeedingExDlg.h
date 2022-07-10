@@ -36,4 +36,5 @@ public:
 	afx_msg void OnBnClickedInitLeft99();
 	afx_msg void OnBnClickedLeftDecrease();
 	afx_msg void OnBnClickedLockLeft();
+	afx_msg void OnBnClickedGod();
 };
