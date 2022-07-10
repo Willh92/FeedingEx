@@ -306,10 +306,10 @@ void CFeedingExDlg::OnBnClickedLockLeft()
 		if (nHandle) {
 			BYTE origin[] = { 0x8B,0x01,0xC3,0xCC,0xCC };
 			BYTE jmpCode[] = { 0xE9, 0x00, 0x00, 0x00, 0x00 };
-			DWORD size = sizeof(origin);
+			CONST DWORD size = sizeof(origin);
 			DWORD hookSize = (DWORD)LockLife_end - (DWORD)LockLife_start;
 			DWORD baseAddress = 0x00435170;
-			BYTE* read = new BYTE[size];
+			BYTE read[size];
 			memset(read, 0, size * sizeof(BYTE));
 			DWORD dwNumberOfBytesRead;
 			if (ReadProcessMemory(nHandle, (LPVOID)baseAddress, read, sizeof(origin), &dwNumberOfBytesRead)) {
